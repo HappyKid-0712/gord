@@ -44,7 +44,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().StringP("engine", "e", "dictapi", "选择翻译引擎（可选：dictapi，youdao）")
+	rootCmd.Flags().StringP("engine", "e", "baidu", "选择翻译引擎（可选：dictapi，baidu）")
 	viper.BindPFlag("engine", rootCmd.Flags().Lookup("engine"))
 
 	viper.SetConfigName(".gord")
