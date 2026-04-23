@@ -4,6 +4,7 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"gord/internal/engine"
 	"gord/internal/printer"
 	"os"
@@ -49,6 +50,11 @@ func init() {
 
 	viper.SetConfigName(".gord")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME")
-	_ = viper.ReadInConfig()
+	if home, err := os.UserHomeDir(); err == nil {
+		viper.AddConfigPath(home)
+	}
+	viper.AddConfigPath(".")
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println("配置文件读取状态:", err)
+	}
 }
