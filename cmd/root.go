@@ -4,10 +4,12 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"gord/internal/engine"
 	"gord/internal/printer"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -22,12 +24,18 @@ var rootCmd = &cobra.Command{
 			return
 		}
 		word := args[0]
-		printer.PrintConsole(word)
+
+		currEngine := viper.GetString("engine")
+		//获得一个translator的接口
+		transLator := engine.GetDefaultEngine(currEngine)
+		//通过translator实现松耦合
+		result, err := transLator.Search(word)
+		//输出，顺便就处理错误了
+		printer.PrintConsole(result, err)
+
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -36,13 +44,11 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	rootCmd.Flags().StringP("engine", "e", "dictapi", "选择翻译引擎（可选：dictapi，youdao）")
+	viper.BindPFlag("engine", rootCmd.Flags().Lookup("engine"))
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gord.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.SetConfigName(".gord")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("$HOME")
+	_ = viper.ReadInConfig()
 }
