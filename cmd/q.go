@@ -4,9 +4,11 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"gord/internal/engine"
+	"gord/internal/printer"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // qCmd represents the q command
@@ -16,20 +18,20 @@ var qCmd = &cobra.Command{
 	Long:  ``,
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("q called")
+		word := args[0]
+
+		currEngine := viper.GetString("engine")
+		//获得一个translator的接口
+		transLator := engine.GetDefaultEngine(currEngine)
+		//通过translator实现松耦合
+		result, err := transLator.Search(word)
+		//输出，顺便就处理错误了
+		printer.PrintConsole(result, err)
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(qCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// qCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// qCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
