@@ -59,9 +59,11 @@ func (b *BaiduEngine) Search(word string) (model.DictResult, error) {
 	body, _ := io.ReadAll(resp.Body)
 
 	var raw baiduRawResponse
+
 	if err := json.Unmarshal(body, &raw); err != nil {
 		return model.DictResult{}, fmt.Errorf("解析数据失败")
 	}
+
 	if raw.ErrorCode != "" && raw.ErrorCode != "52000" { // 52000 代表成功
 		return model.DictResult{}, fmt.Errorf("百度 API 报错, 错误码: %s, 信息: %s", raw.ErrorCode, raw.ErrorMsg)
 	}
